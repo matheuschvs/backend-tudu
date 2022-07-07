@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  tudu_api:
+    container_name: tudu_api
+    build: .
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env
+    depends_on:
+      tudu_db:
+        condition: service_healthy
+    volumes:
+      - .:/usr/app
+
+  tudu_db:
+    container_name: tudu_db
+    image: postgres:14
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - postgres_tudu:/var/lib/postgresql/data
+
+volumes:
+  postgres_tudu:
+    driver: local
