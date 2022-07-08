@@ -30,6 +30,8 @@ export class CreateTodoUseCase {
     deadline,
     category_id
   }: IRequest): Promise<Todo> {
+    title = title.toLowerCase()
+
     const category = await this.categoriesRepository.findById(
       user_id,
       category_id

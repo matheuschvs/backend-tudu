@@ -36,7 +36,11 @@ export class AddMemberUseCase {
       throw new AppError('User already added', 409)
     }
 
-    const user = await this.usersRepository.findById(member_id) as User
+    const user = await this.usersRepository.findById(member_id)
+
+    if (!user) {
+      throw new AppError('Invalid member', 404)
+    }
 
     await this.todosRepository.addMember(todo_id, user)
   }
